@@ -16,6 +16,10 @@ FSM:
       id: 6
       type: Mimic
 
+    Mimic_Huayno:
+      id: 7
+      type: Mimic
+
 
   Passive:
     transitions: 
@@ -72,6 +76,7 @@ FSM:
       Passive: LT + B.on_pressed
       Mimic_Dance1_subject2: RB + A.on_pressed
       Mimic_Caporal: LB + A.on_pressed
+      Mimic_Huayno: RB + Y.on_pressed
 
     policy_dir: config/policy/velocity
 
@@ -94,5 +99,16 @@ FSM:
 
     motion_file: config/policy/mimic/caporal/params/caporal.npz
     policy_dir: config/policy/mimic/caporal/
+    time_start: 0.0
+    time_end: 1000.0
+
+
+  Mimic_Huayno:
+    transitions:
+      Passive: LT + B.on_pressed
+      Velocity: RT + A.on_pressed
+
+    motion_file: config/policy/mimic/huayno/params/huayno.npz
+    policy_dir: config/policy/mimic/huayno/
     time_start: 0.0
     time_end: 1000.0
