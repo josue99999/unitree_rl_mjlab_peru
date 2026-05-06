@@ -30,12 +30,12 @@ from mjlab.viewer import ViewerConfig
 import src.tasks.tracking.mdp as mdp
 
 VELOCITY_RANGE = {
-  "x": (-0.5, 0.5),
-  "y": (-0.5, 0.5),
-  "z": (-0.2, 0.2),
-  "roll": (-0.52, 0.52),
-  "pitch": (-0.52, 0.52),
-  "yaw": (-0.78, 0.78),
+  "x": (-1.0, 1.0),
+  "y": (-1.0, 1.0),
+  "z": (-0.3, 0.3),
+  "roll": (-0.78, 0.78),
+  "pitch": (-0.78, 0.78),
+  "yaw": (-1.05, 1.05),
 }
 
 
@@ -168,7 +168,7 @@ def make_tracking_env_cfg() -> ManagerBasedRlEnvCfg:
     "push_robot": EventTermCfg(
       func=mdp.push_by_setting_velocity,
       mode="interval",
-      interval_range_s=(1.0, 3.0),
+      interval_range_s=(0.5, 2.0),
       params={"velocity_range": VELOCITY_RANGE},
     ),
     "base_com": EventTermCfg(
@@ -178,9 +178,9 @@ def make_tracking_env_cfg() -> ManagerBasedRlEnvCfg:
         "asset_cfg": SceneEntityCfg("robot", body_names=()),  # Set in robot cfg.
         "operation": "add",
         "ranges": {
-          0: (-0.05, 0.05),
-          1: (-0.05, 0.05),
-          2: (-0.05, 0.05),
+          0: (-0.1, 0.1),
+          1: (-0.1, 0.1),
+          2: (-0.1, 0.1),
         },
       },
     ),
@@ -189,7 +189,7 @@ def make_tracking_env_cfg() -> ManagerBasedRlEnvCfg:
       func=dr.encoder_bias,
       params={
         "asset_cfg": SceneEntityCfg("robot"),
-        "bias_range": (-0.01, 0.01),
+        "bias_range": (-0.05, 0.05),
       },
     ),
     "foot_friction": EventTermCfg(
@@ -198,7 +198,7 @@ def make_tracking_env_cfg() -> ManagerBasedRlEnvCfg:
       params={
         "asset_cfg": SceneEntityCfg("robot", geom_names=()),  # Set per-robot.
         "operation": "abs",
-        "ranges": (0.3, 1.2),
+        "ranges": (0.2, 1.5),
         "shared_random": True,  # All foot geoms share the same friction.
       },
     ),
@@ -239,7 +239,7 @@ def make_tracking_env_cfg() -> ManagerBasedRlEnvCfg:
       weight=1.0,
       params={"command_name": "motion", "std": 3.14},
     ),
-    "action_rate_l2": RewardTermCfg(func=mdp.action_rate_l2, weight=-1e-1),
+    "action_rate_l2": RewardTermCfg(func=mdp.action_rate_l2, weight=-0.3),
     "joint_limit": RewardTermCfg(
       func=mdp.joint_pos_limits,
       weight=-10.0,
@@ -260,21 +260,21 @@ def make_tracking_env_cfg() -> ManagerBasedRlEnvCfg:
     "time_out": TerminationTermCfg(func=mdp.time_out, time_out=True),
     "anchor_pos": TerminationTermCfg(
       func=mdp.bad_anchor_pos_z_only,
-      params={"command_name": "motion", "threshold": 0.25},
+      params={"command_name": "motion", "threshold": 0.3},
     ),
     "anchor_ori": TerminationTermCfg(
       func=mdp.bad_anchor_ori,
       params={
         "asset_cfg": SceneEntityCfg("robot"),
         "command_name": "motion",
-        "threshold": 0.8,
+        "threshold": 1.0,
       },
     ),
     "ee_body_pos": TerminationTermCfg(
       func=mdp.bad_motion_body_pos_z_only,
       params={
         "command_name": "motion",
-        "threshold": 0.25,
+        "threshold": 0.4,
         "body_names": (),  # Set per-robot.
       },
     ),
@@ -311,5 +311,5 @@ def make_tracking_env_cfg() -> ManagerBasedRlEnvCfg:
       ),
     ),
     decimation=4,
-    episode_length_s=10.0,
+    episode_length_s=20.0,
   )
